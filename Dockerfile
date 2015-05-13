@@ -35,7 +35,6 @@ RUN echo deb http://archive.ubuntu.com/ubuntu precise universe multiverse >> /et
     autoconf \
     automake \
     mercurial \
-    libopencv-dev \
     build-essential \
     checkinstall \
     cmake \
@@ -179,7 +178,7 @@ RUN make install
 
 # Build OpenCV 3.x
 # =================================
-RUN apt-get update -qq && apt-get install -y --force-yes libopencv-dev
+#RUN apt-get update -qq && apt-get install -y --force-yes libopencv-dev
 WORKDIR /usr/local/src
 RUN mkdir -p opencv/release
 WORKDIR /usr/local/src/opencv/release
@@ -216,7 +215,6 @@ RUN ./configure --extra-libs="-ldl" \
             --enable-libvorbis \
             --enable-libvpx \
             --enable-libx264 \
-            --enable-shared \
             --enable-nonfree
 RUN make -j ${NUM_CORES}
 RUN make install
