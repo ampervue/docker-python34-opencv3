@@ -1,6 +1,6 @@
-FROM dkarchmervue/python34-opencv
+FROM dkarchmervue/python34-opencv3
 
-# https://github.com/ampervue/docker-python34-opencv
+# https://github.com/ampervue/docker-python34-opencv3
 
 MAINTAINER David Karchmer <dkarchmer@gmail.com>
 
@@ -10,7 +10,6 @@ MAINTAINER David Karchmer <dkarchmer@gmail.com>
 # See http://docs.opencv.org/doc/tutorials/introduction/load_save_image/load_save_image.html
 #
 # ~~~~
-# git clone https://dkarchmer-vue@bitbucket.org/ampervue/python34-opencv.git
 # cd example
 # docker build -t opencvtest .
 # docker run -it --rm -p 5901:5901 -e USER=root opencvtest \

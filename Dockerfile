@@ -1,7 +1,6 @@
-#FROM python:3.4-wheezy
 FROM ubuntu:trusty
 
-# https://github.com/ampervue/docker-python34-opencv
+# https://github.com/ampervue/docker-python34-opencv3
 
 MAINTAINER David Karchmer <dkarchmer@ampervue.com>
 
