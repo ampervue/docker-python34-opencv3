@@ -1,7 +1,7 @@
 # docker-python34-opencv
 
 
-A Docker image running Ubuntu:trusty with Python 2.7, the latest FFMPEG (built from source), and OpenCV 3 (built from source)
+A Docker image running Debian with Python 3.4, the latest FFMPEG (built from source), and OpenCV 3 (built from source)
 
 
 

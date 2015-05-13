@@ -1,36 +1,44 @@
-FROM FROM python:3.4
+#FROM python:3.4-wheezy
+FROM ubuntu:trusty
 
-# https://github.com/ampervue/docker-python27-opencv
+# https://github.com/ampervue/docker-python34-opencv
 
-MAINTAINER David Karchmer <dkarchmer@gmail.com>
+MAINTAINER David Karchmer <dkarchmer@ampervue.com>
 
-########################################
+#####################################################################
 #
-# Image based on Ubuntu:trusty
+# Image based on Ubuntu:14.04
 #
-#   with Python 3.4
-#   and OpenCV 2.4.10 (built)
-#   plus a bunch of build essencials
-#######################################
+#   with
+#     - Python 3.4
+#     - OpenCV 3 (built)
+#     - FFMPEG (built)
+#   plus a bunch of build/web essentials via wheezy
+#   including MySQL and Postgres clients:
+#      https://github.com/docker-library/docs/tree/master/buildpack-deps
+#
+#####################################################################
 
-# Set Locale
-
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV PYTHON_VERSION 3.4.3
+ENV YASM_VERSION    1.3.0
+ENV NUM_CORES 4
 
 RUN apt-get -qq remove ffmpeg
+# remove several traces of python
+RUN apt-get purge -y python.*
 
 RUN echo deb http://archive.ubuntu.com/ubuntu precise universe multiverse >> /etc/apt/sources.list; \
     apt-get update -qq && apt-get install -y --force-yes \
     curl \
     git \
     g++ \
+    autoconf \
     automake \
     mercurial \
     libopencv-dev \
+    build-essential \
     checkinstall \
+    cmake \
     pkg-config \
     libtiff4-dev \
     libpng-dev \
@@ -61,9 +69,36 @@ RUN echo deb http://archive.ubuntu.com/ubuntu precise universe multiverse >> /et
     unzip; \
     apt-get clean
 
-ENV YASM_VERSION    1.3.0
-ENV OPENCV_VERSION  2.4.10
-ENV NUM_CORES 4
+# gpg: key F73C700D: public key "Larry Hastings <larry@hastings.org>" imported
+RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
+
+RUN set -x \
+	&& mkdir -p /usr/src/python \
+	&& curl -SL "https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tar.xz" -o python.tar.xz \
+	&& curl -SL "https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tar.xz.asc" -o python.tar.xz.asc \
+	&& gpg --verify python.tar.xz.asc \
+	&& tar -xJC /usr/src/python --strip-components=1 -f python.tar.xz \
+	&& rm python.tar.xz* \
+	&& cd /usr/src/python \
+	&& ./configure --enable-shared --enable-unicode=ucs4 \
+	&& make -j$(nproc) \
+	&& make install \
+	&& ldconfig \
+	&& find /usr/local \
+		\( -type d -a -name test -o -name tests \) \
+		-o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
+		-exec rm -rf '{}' + \
+	&& rm -rf /usr/src/python
+
+# make some useful symlinks that are expected to exist
+RUN cd /usr/local/bin \
+	&& ln -s easy_install-3.4 easy_install \
+	&& ln -s idle3 idle \
+	&& ln -s pip3 pip \
+	&& ln -s pydoc3 pydoc \
+	&& ln -s python3 python \
+	&& ln -s python-config3 python-config
+
 
 WORKDIR /usr/local/src
 
@@ -108,10 +143,10 @@ RUN make install
 
 # Build libx265
 # =================================
-WORKDIR  /usr/local/src/x265/build/linux
-RUN cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr ../../source
-RUN make -j ${NUM_CORES}
-RUN make install
+#WORKDIR  /usr/local/src/x265/build/linux
+#RUN cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr ../../source
+#RUN make -j ${NUM_CORES}
+#RUN make install
 # =================================
 
 # Build libfdk-aac
@@ -181,7 +216,7 @@ RUN ./configure --extra-libs="-ldl" \
             --enable-libvorbis \
             --enable-libvpx \
             --enable-libx264 \
-            --enable-libx265 \
+            --enable-shared \
             --enable-nonfree
 RUN make -j ${NUM_CORES}
 RUN make install
