@@ -101,20 +101,21 @@ RUN cd /usr/local/bin \
 	&& ln -s python3 python \
 	&& ln -s python-config3 python-config
 
+RUN pip install -U pip
 
 WORKDIR /usr/local/src
 
-RUN git clone --depth 1 https://github.com/l-smash/l-smash
-RUN git clone --depth 1 git://git.videolan.org/x264.git
-RUN hg clone https://bitbucket.org/multicoreware/x265
-RUN git clone --depth 1 git://source.ffmpeg.org/ffmpeg
-RUN git clone https://github.com/Itseez/opencv.git
-RUN git clone --depth 1 git://github.com/mstorsjo/fdk-aac.git
-RUN git clone --depth 1 https://chromium.googlesource.com/webm/libvpx
-RUN git clone --depth 1 git://git.opus-codec.org/opus.git
-RUN git clone --depth 1 https://github.com/mulx/aacgain.git
-RUN curl -Os http://www.tortall.net/projects/yasm/releases/yasm-${YASM_VERSION}.tar.gz
-RUN tar xzvf yasm-${YASM_VERSION}.tar.gz
+RUN git clone --depth 1 https://github.com/l-smash/l-smash \
+    && git clone --depth 1 git://git.videolan.org/x264.git \
+    && hg clone https://bitbucket.org/multicoreware/x265 \
+    && git clone --depth 1 git://source.ffmpeg.org/ffmpeg \
+    && git clone https://github.com/Itseez/opencv.git \
+    && git clone --depth 1 git://github.com/mstorsjo/fdk-aac.git \
+    && git clone --depth 1 https://chromium.googlesource.com/webm/libvpx \
+    && git clone --depth 1 git://git.opus-codec.org/opus.git \
+    && git clone --depth 1 https://github.com/mulx/aacgain.git \
+    && curl -Os http://www.tortall.net/projects/yasm/releases/yasm-${YASM_VERSION}.tar.gz \
+    && tar xzvf yasm-${YASM_VERSION}.tar.gz
 
 # Build YASM
 # =================================
@@ -219,8 +220,8 @@ RUN ./configure --extra-libs="-ldl" \
             --enable-libvpx \
             --enable-libx264 \
             --enable-libx265 \
-            --enable-nonfree
-RUN make -j ${NUM_CORES} \
+            --enable-nonfree \
+    && make -j ${NUM_CORES} \
     && make install
 # =================================
 
