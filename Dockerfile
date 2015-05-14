@@ -28,16 +28,16 @@ RUN apt-get purge -y python.*
 
 RUN echo deb http://archive.ubuntu.com/ubuntu precise universe multiverse >> /etc/apt/sources.list; \
     apt-get update -qq && apt-get install -y --force-yes \
-    curl \
-    git \
-    g++ \
+    ant \
     autoconf \
     automake \
-    mercurial \
     build-essential \
+    curl \
     checkinstall \
     cmake \
-    pkg-config \
+    default-jdk \
+    git \
+    g++ \
     libtiff4-dev \
     libpng-dev \
     libjpeg-dev \
@@ -60,9 +60,11 @@ RUN echo deb http://archive.ubuntu.com/ubuntu precise universe multiverse >> /et
     libvorbis-dev \
     libxvidcore-dev \
     libtool \
+    libssl-dev \
+    mercurial \
+    openssl \
+    pkg-config \
     v4l-utils \
-    default-jdk \
-    ant \
     wget \
     unzip; \
     apt-get clean
@@ -115,62 +117,62 @@ RUN tar xzvf yasm-${YASM_VERSION}.tar.gz
 # Build YASM
 # =================================
 WORKDIR /usr/local/src/yasm-${YASM_VERSION}
-RUN ./configure
-RUN make -j ${NUM_CORES}
-RUN make install
+RUN ./configure \
+    && make -j ${NUM_CORES} \
+    && make install
 # =================================
 
 
 # Build L-SMASH
 # =================================
 WORKDIR /usr/local/src/l-smash
-RUN ./configure
-RUN make -j ${NUM_CORES}
-RUN make install
+RUN ./configure \
+    && make -j ${NUM_CORES} \
+    && make install
 # =================================
 
 
 # Build libx264
 # =================================
 WORKDIR /usr/local/src/x264
-RUN ./configure --enable-static
-RUN make -j ${NUM_CORES}
-RUN make install
+RUN ./configure --enable-static \
+    && make -j ${NUM_CORES} \
+    && make install
 # =================================
 
 
 # Build libx265
 # =================================
-#WORKDIR  /usr/local/src/x265/build/linux
-#RUN cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr ../../source
-#RUN make -j ${NUM_CORES}
-#RUN make install
+WORKDIR  /usr/local/src/x265/build/linux
+RUN cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr ../../source \
+    && make -j ${NUM_CORES} \
+    && make install
 # =================================
 
 # Build libfdk-aac
 # =================================
 WORKDIR /usr/local/src/fdk-aac
-RUN autoreconf -fiv
-RUN ./configure --disable-shared
-RUN make -j ${NUM_CORES}
-RUN make install
+RUN autoreconf -fiv \
+    && ./configure --disable-shared \
+    && make -j ${NUM_CORES} \
+    && make install
 # =================================
 
 # Build libvpx
 # =================================
 WORKDIR /usr/local/src/libvpx
-RUN ./configure --disable-examples
-RUN make -j ${NUM_CORES}
-RUN make install
+RUN ./configure --disable-examples \
+    && make -j ${NUM_CORES} \
+    && make install
 # =================================
 
 # Build libopus
 # =================================
 WORKDIR /usr/local/src/opus
-RUN ./autogen.sh
-RUN ./configure --disable-shared
-RUN make -j ${NUM_CORES}
-RUN make install
+RUN ./autogen.sh \
+    && ./configure --disable-shared \
+    && make -j ${NUM_CORES} \
+    && make install
 # =================================
 
 
@@ -188,10 +190,10 @@ RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
           -D WITH_V4L=ON \
           ..
 
-RUN make -j ${NUM_CORES}
-RUN make install
-RUN sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
-RUN ldconfig
+RUN make -j ${NUM_CORES} \
+    && make install \
+    && sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf' \
+    && ldconfig
 # =================================
 
 
@@ -214,9 +216,10 @@ RUN ./configure --extra-libs="-ldl" \
             --enable-libvorbis \
             --enable-libvpx \
             --enable-libx264 \
+            --enable-libx265 \
             --enable-nonfree
-RUN make -j ${NUM_CORES}
-RUN make install
+RUN make -j ${NUM_CORES} \
+    && make install
 # =================================
 
 
