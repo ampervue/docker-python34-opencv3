@@ -38,32 +38,34 @@ RUN echo deb http://archive.ubuntu.com/ubuntu precise universe multiverse >> /et
     default-jdk \
     git \
     g++ \
-    libtiff4-dev \
-    libpng-dev \
-    libjpeg-dev \
-    libjasper-dev \
     libavcodec-dev \
     libavformat-dev \
-    libswscale-dev \
     libdc1394-22-dev \
-    libxine-dev \
+    libfaac-dev \
     libgstreamer0.10-dev \
     libgstreamer-plugins-base0.10-dev \
-    libv4l-dev \
-    libtbb-dev \
     libgtk2.0-dev \
-    libfaac-dev \
+    libjpeg-dev \
+    libjasper-dev \
     libmp3lame-dev \
     libopencore-amrnb-dev \
     libopencore-amrwb-dev \
-    libtheora-dev \
-    libvorbis-dev \
-    libxvidcore-dev \
-    libtool \
+    libpq-dev \
+    libpng-dev \
     libssl-dev \
+    libswscale-dev \
+    libtbb-dev \
+    libtheora-dev \
+    libtiff4-dev \
+    libtool \
+    libxine-dev \
+    libxvidcore-dev \
+    libv4l-dev \
+    libvorbis-dev \
     mercurial \
     openssl \
     pkg-config \
+    postgresql-client \
     v4l-utils \
     wget \
     unzip; \
