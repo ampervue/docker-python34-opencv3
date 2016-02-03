@@ -18,7 +18,7 @@ MAINTAINER David Karchmer <dkarchmer@ampervue.com>
 #
 #####################################################################
 
-ENV PYTHON_VERSION 3.4.3
+ENV PYTHON_VERSION 3.4.4
 ENV YASM_VERSION    1.3.0
 ENV NUM_CORES 4
 
@@ -38,6 +38,7 @@ RUN echo deb http://archive.ubuntu.com/ubuntu precise universe multiverse >> /et
     default-jdk \
     git \
     g++ \
+    imagemagick \
     libavcodec-dev \
     libavformat-dev \
     libdc1394-22-dev \
