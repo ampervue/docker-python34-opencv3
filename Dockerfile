@@ -26,7 +26,7 @@ RUN apt-get -qq remove ffmpeg
 # remove several traces of python
 RUN apt-get purge -y python.*
 
-RUN echo deb http://archive.ubuntu.com/ubuntu precise universe multiverse >> /etc/apt/sources.list; \
+RUN echo deb http://archive.ubuntu.com/ubuntu trusty universe multiverse >> /etc/apt/sources.list; \
     apt-get update -qq && apt-get install -y --force-yes \
     ant \
     autoconf \
