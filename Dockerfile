@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM ampervue/python34
 
 # https://github.com/ampervue/docker-python34-opencv3
 
@@ -18,92 +18,8 @@ MAINTAINER David Karchmer <dkarchmer@ampervue.com>
 #
 #####################################################################
 
-ENV PYTHON_VERSION 3.4.4
-ENV YASM_VERSION    1.3.0
 ENV NUM_CORES 4
 
-RUN apt-get -qq remove ffmpeg
-# remove several traces of python
-RUN apt-get purge -y python.*
-
-RUN echo deb http://archive.ubuntu.com/ubuntu trusty universe multiverse >> /etc/apt/sources.list; \
-    apt-get update -qq && apt-get install -y --force-yes \
-    ant \
-    autoconf \
-    automake \
-    build-essential \
-    curl \
-    checkinstall \
-    cmake \
-    default-jdk \
-    git \
-    g++ \
-    imagemagick \
-    libavcodec-dev \
-    libavformat-dev \
-    libdc1394-22-dev \
-    libfaac-dev \
-    libgstreamer0.10-dev \
-    libgstreamer-plugins-base0.10-dev \
-    libgtk2.0-dev \
-    libjpeg-dev \
-    libjasper-dev \
-    libmp3lame-dev \
-    libopencore-amrnb-dev \
-    libopencore-amrwb-dev \
-    libpq-dev \
-    libpng-dev \
-    libssl-dev \
-    libswscale-dev \
-    libtbb-dev \
-    libtheora-dev \
-    libtiff4-dev \
-    libtool \
-    libxine-dev \
-    libxvidcore-dev \
-    libv4l-dev \
-    libvorbis-dev \
-    mercurial \
-    openssl \
-    pkg-config \
-    postgresql-client \
-    supervisor \    
-    v4l-utils \
-    wget \
-    unzip; \
-    apt-get clean
-
-# gpg: key F73C700D: public key "Larry Hastings <larry@hastings.org>" imported
-RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
-
-RUN set -x \
-	&& mkdir -p /usr/src/python \
-	&& curl -SL "https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tar.xz" -o python.tar.xz \
-	&& curl -SL "https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tar.xz.asc" -o python.tar.xz.asc \
-	&& gpg --verify python.tar.xz.asc \
-	&& tar -xJC /usr/src/python --strip-components=1 -f python.tar.xz \
-	&& rm python.tar.xz* \
-	&& cd /usr/src/python \
-	&& ./configure --enable-shared --enable-unicode=ucs4 \
-	&& make -j$(nproc) \
-	&& make install \
-	&& ldconfig \
-	&& find /usr/local \
-		\( -type d -a -name test -o -name tests \) \
-		-o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
-		-exec rm -rf '{}' + \
-	&& rm -rf /usr/src/python
-
-# make some useful symlinks that are expected to exist
-RUN cd /usr/local/bin \
-	&& ln -s easy_install-3.4 easy_install \
-	&& ln -s idle3 idle \
-	&& ln -s pip3 pip \
-	&& ln -s pydoc3 pydoc \
-	&& ln -s python3 python \
-	&& ln -s python-config3 python-config
-
-RUN pip install -U pip
 
 WORKDIR /usr/local/src
 
@@ -115,18 +31,7 @@ RUN git clone --depth 1 https://github.com/l-smash/l-smash \
     && git clone --depth 1 git://github.com/mstorsjo/fdk-aac.git \
     && git clone --depth 1 https://chromium.googlesource.com/webm/libvpx \
     && git clone --depth 1 git://git.opus-codec.org/opus.git \
-    && git clone --depth 1 https://github.com/mulx/aacgain.git \
-    && curl -Os http://www.tortall.net/projects/yasm/releases/yasm-${YASM_VERSION}.tar.gz \
-    && tar xzvf yasm-${YASM_VERSION}.tar.gz
-
-# Build YASM
-# =================================
-WORKDIR /usr/local/src/yasm-${YASM_VERSION}
-RUN ./configure \
-    && make -j ${NUM_CORES} \
-    && make install
-# =================================
-
+    && git clone --depth 1 https://github.com/mulx/aacgain.git
 
 # Build L-SMASH
 # =================================
