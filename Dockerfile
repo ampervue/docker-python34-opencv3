@@ -112,6 +112,7 @@ RUN make -j ${NUM_CORES} \
 RUN apt-get update -qq && apt-get install -y --force-yes \
     libass-dev
 
+#            --enable-libx265 - Does not work on recent builds
 WORKDIR /usr/local/src/ffmpeg
 RUN ./configure --extra-libs="-ldl" \
             --enable-gpl \
@@ -126,7 +127,6 @@ RUN ./configure --extra-libs="-ldl" \
             --enable-libvorbis \
             --enable-libvpx \
             --enable-libx264 \
-            --enable-libx265 \
             --enable-nonfree \
     && make -j ${NUM_CORES} \
     && make install
